@@ -6,18 +6,19 @@ import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import "@rainbow-me/rainbowkit/styles.css"
 
+// WalletConnect Project ID (може бути тимчасовий)
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "missing"
 
-// Мережі, з якими працюємо (можеш залишити всі три)
-const chains = [base, polygon, mainnet]
+// Ланцюги, які будемо підтримувати
+// Каст нижче усуває конфлікт типів між пакунками (wagmi/rainbowkit/viem)
+const chains = [base, polygon, mainnet] as const
 
-// Конфіг wagmi + RainbowKit v2: БЕЗ getDefaultWallets
 const config = getDefaultConfig({
   appName: "TLDraw Gate",
   projectId,
-  chains,
+  // 👇 ключовий момент: дати TS «проковтнути» типи
+  chains: chains as unknown as any,
   transports: {
-    // Якщо є RPC_URL для обраної мережі — підставляємо, інакше дефолтний
     [base.id]: http(process.env.RPC_URL),
     [polygon.id]: http(),
     [mainnet.id]: http(),
@@ -31,7 +32,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
+        <RainbowKitProvider>
+          {children}
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   )
