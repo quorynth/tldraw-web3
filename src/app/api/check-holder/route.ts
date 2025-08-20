@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { createPublicClient, http, getAddress } from "viem"
 import { base } from "viem/chains"
-import erc721 from "@/lib/abi/erc721.json"
-import erc1155 from "@/lib/abi/erc1155.json"
+import erc721 from "../../../lib/abi/erc721.json"
+import erc1155 from "../../../lib/abi/erc1155.json"
 
 const client = createPublicClient({
   chain: base,
