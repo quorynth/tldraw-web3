@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',           // ← головне, щоб Next зібрав статичний сайт у /out
-  images: { unoptimized: true }
+  // Головне: статичний експорт у папку ./out
+  output: 'export',
+  // Щоб Next не намагався оптимізувати зображення під сервер
+  images: { unoptimized: true },
 }
+
 module.exports = nextConfig
