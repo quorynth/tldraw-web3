@@ -1,16 +1,23 @@
 {
-  "name": "tldraw-min",
+  "name": "tldraw-nft-gated-next",
+  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "export": "next build"
+    "start": "next start"
   },
   "dependencies": {
-    "@tldraw/tldraw": "latest",
-    "next": "^14.2.32",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tldraw": "^2.3.0",
+    "wagmi": "^2.12.7",
+    "viem": "^2.9.16",
+    "@rainbow-me/rainbowkit": "^2.2.0",
+    "siwe": "^2.3.2",
+    "zod": "^3.23.8",
+    "jose": "^5.9.2"
   }
 }
