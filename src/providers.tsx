@@ -1,18 +1,23 @@
 "use client"
-import { WagmiConfig, createConfig, http } from "wagmi"
+
+import { WagmiProvider, http } from "wagmi"
 import { base, polygon, mainnet } from "wagmi/chains"
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import "@rainbow-me/rainbowkit/styles.css"
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "missing"
-const chainId = Number(process.env.NEXT_PUBLIC_CHAIN_ID || 8453)
-const chains = [base, polygon, mainnet].filter(c => [base.id, polygon.id, mainnet.id].includes(c.id))
 
-const { wallets } = getDefaultWallets({ appName: "TLDraw Gate", projectId, chains })
+// Мережі, з якими працюємо (можеш залишити всі три)
+const chains = [base, polygon, mainnet]
 
-const config = createConfig({
+// Конфіг wagmi + RainbowKit v2: БЕЗ getDefaultWallets
+const config = getDefaultConfig({
+  appName: "TLDraw Gate",
+  projectId,
   chains,
   transports: {
+    // Якщо є RPC_URL для обраної мережі — підставляємо, інакше дефолтний
     [base.id]: http(process.env.RPC_URL),
     [polygon.id]: http(),
     [mainnet.id]: http(),
@@ -20,12 +25,14 @@ const config = createConfig({
   ssr: true,
 })
 
+const queryClient = new QueryClient()
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiConfig config={config}>
-      <RainbowKitProvider chains={chains}>
-        {children}
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>{children}</RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }
