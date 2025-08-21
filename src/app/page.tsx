@@ -1,10 +1,12 @@
-import Link from "next/link"
-export default function Home() {
+"use client"
+
+import "tldraw/tldraw.css"
+import { Tldraw } from "tldraw"
+
+export default function BoardPage() {
   return (
-    <main style={{ padding: 24 }}>
-      <h1>TLDraw Gate</h1>
-      <p><Link href="/gate">Перейти до Gate</Link></p>
-      <p><Link href="/board">Відкрити дошку</Link></p>
-    </main>
+    <div style={{ position: "fixed", inset: 0 }}>
+      <Tldraw />
+    </div>
   )
 }

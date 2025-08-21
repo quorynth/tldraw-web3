@@ -11,13 +11,14 @@
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.0",
     "@tanstack/react-query": "^5.85.5",
+    "@tldraw/tldraw": "^3.15.2",
     "@web3modal/wagmi": "^5.1.11",
     "jose": "^5.9.2",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "siwe": "^2.3.2",
-    "tldraw": "^2.3.0",
+    "tldraw": "^2.4.6",
     "viem": "^2.34.0",
     "wagmi": "^2.16.4",
     "zod": "^3.23.8"
