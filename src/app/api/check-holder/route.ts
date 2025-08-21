@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { createPublicClient, http } from "viem"
-import { mainnet } from "viem/chains"
-
+import { mainnet, polygon } from "viem/chains"
 import erc721 from "@/lib/abi/erc721.json"
 import erc1155 from "@/lib/abi/erc1155.json"
 
@@ -16,21 +15,24 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing nft or user" }, { status: 400 })
   }
 
+  // Ланцюг можна виставити через ENV (polygon або mainnet)
+  const chain = process.env.NEXT_PUBLIC_CHAIN === "polygon" ? polygon : mainnet
+
   const client = createPublicClient({
-    chain: mainnet,
-    transport: http(),
+    chain,
+    transport: http(process.env.NEXT_PUBLIC_RPC_URL || undefined),
   })
 
-  let held = false
-
   try {
+    let held = false
+
     if (type === "erc1155") {
       const balance = (await client.readContract({
         address: nft,
         abi: erc1155,
         functionName: "balanceOf",
         args: [user, tokenId],
-      })) as unknown as bigint
+      })) as bigint
 
       held = balance > 0n
     } else {
@@ -39,14 +41,14 @@ export async function GET(req: Request) {
         abi: erc721,
         functionName: "balanceOf",
         args: [user],
-      })) as unknown as bigint
+      })) as bigint
 
       held = balance > 0n
     }
 
     return NextResponse.json({ held })
   } catch (err) {
-    console.error(err)
+    console.error("NFT check failed", err)
     return NextResponse.json({ error: "Contract read failed" }, { status: 500 })
   }
 }

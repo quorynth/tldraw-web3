@@ -12,10 +12,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 const queryClient = new QueryClient()
 
-// Якщо не задав RPC у .env, буде дефолтний polygon-rpc.com
 const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || "https://polygon-rpc.com"
 
-// wagmi конфіг
 const config = createConfig({
   chains: [polygon],
   transports: {
