@@ -1,0 +1,28 @@
+# Ensure consistent line endings
+* text=auto eol=lf
+
+# Treat TypeScript and JavaScript files as text
+*.js     text
+*.jsx    text
+*.ts     text
+*.tsx    text
+
+# Treat common web assets as binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.mp4    binary
+*.mp3    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.eot    binary
+*.svg    text
+
+# Lock package manager files
+package-lock.json -diff
+yarn.lock        -diff
+pnpm-lock.yaml   -diff
