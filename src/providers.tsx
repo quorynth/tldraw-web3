@@ -15,12 +15,9 @@ const queryClient = new QueryClient()
 // Якщо не задав RPC у .env, буде дефолтний polygon-rpc.com
 const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || "https://polygon-rpc.com"
 
-// тільки Polygon
-const chains = [polygon] as const
-
 // wagmi конфіг
 const config = createConfig({
-  chains,
+  chains: [polygon],
   transports: {
     [polygon.id]: http(rpcUrl),
   },
@@ -31,7 +28,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider chains={chains}>
+        <RainbowKitProvider>
           {children}
         </RainbowKitProvider>
       </QueryClientProvider>
