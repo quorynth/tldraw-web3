@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server"
-
 import { createPublicClient, http } from "viem"
-import { polygon } from "viem/chains"
-
-const client = createPublicClient({
-  chain: polygon,
-  transport: http(process.env.RPC_URL),
-})
+import { mainnet } from "viem/chains"
 
 import erc721 from "@/lib/abi/erc721.json"
 import erc1155 from "@/lib/abi/erc1155.json"
