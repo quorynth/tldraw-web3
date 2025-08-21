@@ -1,5 +1,6 @@
 import "./globals.css"
-import Providers from "../providers"
+import { Providers } from "../providers"
+
 
 export const metadata = { title: "TLDraw NFT Gate", description: "Protected TLDraw" }
 
