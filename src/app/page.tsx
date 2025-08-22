@@ -44,18 +44,27 @@ export default function Page() {
     return () => { ignore = true }
   }, [isConnected, address])
 
-  // Ще не під’єднали гаманець – показуємо кнопки
-  if (!isConnected) {
-    return (
-      <div style={{ textAlign: "center", marginTop: 96 }}>
-        <h1>TLDraw NFT Gate</h1>
-        <p>Під’єднай гаманець, щоб увійти</p>
-          <div className="flex min-h-screen items-center justify-center">
-            <ConnectButton />
-          </div>
-      </div>
-    )
-  }
+// Ще не під’єднали гаманець – показуємо кнопки
+if (!isConnected) {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',   // центрує по горизонталі
+        justifyContent: 'center', // центрує по вертикалі
+        gap: 12,
+        padding: 24,
+      }}
+    >
+      <h1>TLDraw NFT Gate</h1>
+      <p>Під’єднай гаманець, щоб увійти</p>
+      <ConnectButton />
+    </div>
+  )
+}
+
 
   // Чекаємо перевірку
   if (hasNFT === null) {
