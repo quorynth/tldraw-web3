@@ -1,5 +1,4 @@
-// next.config.js
-/** @type {import('next').NextConfig} */
+// next.config.mjs
 const csp = `
   default-src 'self';
   script-src 'self';
@@ -10,7 +9,8 @@ const csp = `
   frame-src 'self' https://*.walletconnect.com;
 `;
 
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   async headers() {
     return [
       {
@@ -24,5 +24,8 @@ module.exports = {
         ]
       }
     ]
-  }
-}
+  },
+};
+
+// головне — експортувати через export default
+export default nextConfig;
