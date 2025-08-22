@@ -13,9 +13,9 @@ const nextConfig = {
               default-src 'self';
               script-src 'self' 'unsafe-inline';
               style-src 'self' 'unsafe-inline';
-              img-src 'self' data: https://cdn.tldraw.com;
+              img-src 'self' data: blob: https://cdn.tldraw.com;
               font-src 'self' https://cdn.tldraw.com data:;
-              connect-src 'self' https://cdn.tldraw.com https://*.alchemy.com https://polygon-mainnet.g.alchemy.com https://*.walletconnect.com https://*.reown.com;
+              connect-src 'self' blob: https://cdn.tldraw.com https://*.alchemy.com https://polygon-mainnet.g.alchemy.com https://*.walletconnect.com https://*.reown.com;
               frame-src 'self' https://*.walletconnect.com;
             `.replace(/\s{2,}/g, " ").trim(),
           },
