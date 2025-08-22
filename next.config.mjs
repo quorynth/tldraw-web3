@@ -1,5 +1,4 @@
 // next.config.mjs
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async headers() {
@@ -11,13 +10,17 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: `
               default-src 'self';
+              base-uri 'self';
+              frame-ancestors 'self';
               script-src 'self' 'unsafe-inline';
               style-src 'self' 'unsafe-inline';
               img-src 'self' data: blob: https://cdn.tldraw.com;
               font-src 'self' https://cdn.tldraw.com data:;
-              connect-src 'self' blob: https://cdn.tldraw.com https://*.alchemy.com https://polygon-mainnet.g.alchemy.com https://*.walletconnect.com https://*.reown.com;
+              connect-src 'self' blob: https://cdn.tldraw.com https://polygon-mainnet.g.alchemy.com https://*.walletconnect.com https://*.reown.com;
+              worker-src 'self' blob:;
               frame-src 'self' https://*.walletconnect.com;
-            `.replace(/\s{2,}/g, " ").trim(),
+              manifest-src 'self' https://cdn.tldraw.com;
+            `.replace(/\s{2,}/g, ' ').trim(),
           },
         ],
       },
