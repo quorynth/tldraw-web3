@@ -73,5 +73,9 @@ export default function Page() {
   }
 
   // Є NFT – відкриваємо дошку
-  return <Tldraw />
+    return (
+    <div style={{ height: "100vh", width: "100vw" }}>
+      <Tldraw persistenceKey="gated-room" />
+    </div>
+  )
 }
