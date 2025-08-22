@@ -8,16 +8,15 @@ export const metadata = {
   description: "Protected TLDraw",
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // дістаємо nonce із заголовків, які проставляє middleware
-  const nonce = headers().get("x-nonce") || undefined
+// ⚠ RootLayout тепер має бути async
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const h = await headers()       // треба await
+  const nonce = h.get("x-nonce") || undefined
 
   return (
     <html lang="uk">
       <body>
         <Providers>{children}</Providers>
-        {/* пустий скрипт з nonce для ініціалізації, 
-            щоб Next/TLDraw inline-скрипти теж пройшли CSP */}
         <script nonce={nonce} />
       </body>
     </html>
