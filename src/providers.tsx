@@ -1,24 +1,21 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import {
-  WagmiProvider,
-  createConfig,
-  http
-} from "wagmi"
-import { polygon } from "viem/chains"
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import * as React from 'react'
+import { WagmiProvider, http } from 'wagmi'
+import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { polygon } from 'wagmi/chains'
 
 const queryClient = new QueryClient()
 
-const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || "https://polygon-rpc.com"
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!
+const rpcUrl    = process.env.NEXT_PUBLIC_RPC_URL || 'https://polygon-rpc.com'
 
-const config = createConfig({
+const config = getDefaultConfig({
+  appName: 'TLDraw NFT Gate',
+  projectId,                           // ← ОБОВ’ЯЗКОВО
   chains: [polygon],
-  transports: {
-    [polygon.id]: http(rpcUrl),
-  },
+  transports: { [polygon.id]: http(rpcUrl) },
   ssr: true,
 })
 

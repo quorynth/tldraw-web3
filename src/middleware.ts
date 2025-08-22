@@ -31,9 +31,9 @@ export function middleware(req: NextRequest) {
     script-src-elem 'self' 'nonce-${nonce}';
     script-src-attr 'self' 'nonce-${nonce}';
 
-    style-src 'self' 'nonce-${nonce}' 'unsafe-hashes';
-    style-src-elem 'self' 'nonce-${nonce}';
-    style-src-attr 'nonce-${nonce}';
+    style-src 'self' 'nonce-<...>' 'unsafe-inline' 'unsafe-hashes';
+    style-src-elem 'self' 'nonce-<...>' 'unsafe-inline';
+    style-src-attr 'self' 'nonce-<...>' 'unsafe-inline';
 
     img-src 'self' data: blob: https://cdn.tldraw.com https://*.tldraw.com;
     font-src 'self' https://cdn.tldraw.com data:;
