@@ -37,9 +37,11 @@ export default function BoardPage() {
 if (!isConnected) {
   return (
       <div style={{ textAlign: "center", marginTop: 96 }}>
-        <h1>TLDraw NFT Gate</h1>
-        <p>Під’єднай гаманець, щоб увійти</p>        
-        <ConnectButton />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 100 }}>
+          <h1>TLDraw NFT Gate</h1>
+          <p>Connect your wallet to check NFT</p>        
+          <ConnectButton />
+        </div>
       </div>
   )
 }
@@ -51,8 +53,8 @@ if (!isConnected) {
   if (role === "none") {
     return (
       <div style={{ textAlign: "center", marginTop: 96 }}>
-        <h2>Потрібний NFT не знайдено</h2>
-        <p>Цей розділ доступний лише власникам відповідних NFT.</p>
+        <h2>Required NFT not found</h2>
+        <p>Access to this section is restricted to owners of special NFTs</p>
       </div>
     )
   }
