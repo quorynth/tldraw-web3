@@ -7,72 +7,44 @@ import { Tldraw } from "@tldraw/tldraw"
 import "@tldraw/tldraw/tldraw.css"
 
 const NFT_CONTRACT = process.env.NEXT_PUBLIC_NFT_CONTRACT as `0x${string}`
-const NFT_TYPE = (process.env.NEXT_PUBLIC_NFT_TYPE || "erc721").toLowerCase()
-const NFT_TOKEN_ID =
-  process.env.NEXT_PUBLIC_NFT_TOKEN_ID !== undefined
-    ? Number(process.env.NEXT_PUBLIC_NFT_TOKEN_ID)
-    : 0
 
 export default function Page() {
   const { address, isConnected } = useAccount()
-  const [hasNFT, setHasNFT] = useState<boolean | null>(null)
+  const [role, setRole] = useState<"idle"|"none"|"reader"|"writer">("idle")
 
   useEffect(() => {
-    let ignore = false
-    async function check() {
+    (async () => {
       if (!isConnected || !address || !NFT_CONTRACT) {
-        setHasNFT(null)
+        setRole("idle")
         return
       }
-      const qs = new URLSearchParams({
-        nft: NFT_CONTRACT,
-        user: address,
-        type: NFT_TYPE,
-      })
-      // для erc1155 додаємо tokenId
-      if (NFT_TYPE === "erc1155") qs.set("tokenId", String(NFT_TOKEN_ID))
-
       try {
-        const res = await fetch(`/api/check-holder?${qs.toString()}`, { cache: "no-store" })
+        const res = await fetch(`/api/check-holder?user=${address}`, { cache: "no-store" })
         const json = await res.json()
-        if (!ignore) setHasNFT(Boolean(json.held))
+        setRole(json.role ?? "none")
       } catch {
-        if (!ignore) setHasNFT(false)
+        setRole("none")
       }
-    }
-    check()
-    return () => { ignore = true }
+    })()
   }, [isConnected, address])
 
-// Ще не під’єднали гаманець – показуємо кнопки
-if (!isConnected) {
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',   // центрує по горизонталі
-        justifyContent: 'center', // центрує по вертикалі
-        gap: 12,
-        padding: 24,
-      }}
-    >
-      <h1>TLDraw NFT Gate</h1>
-      <p>Під’єднай гаманець, щоб увійти</p>
-      <ConnectButton />
-    </div>
-  )
-}
-
-
-  // Чекаємо перевірку
-  if (hasNFT === null) {
-    return <p style={{ textAlign: "center", marginTop: 96 }}>Перевіряю NFT…</p>
+  if (!isConnected) {
+    return (
+      <div style={{ textAlign: "center", marginTop: 96 }}>
+        <h1>TLDraw NFT Gate</h1>
+        <p>Під’єднай гаманець, щоб увійти</p>
+        <div className="flex min-h-screen items-center justify-center">
+          <ConnectButton />
+        </div>
+      </div>
+    )
   }
 
-  // Нема потрібного NFT – лишаємо на старті
-  if (!hasNFT) {
+  if (role === "idle") {
+    return <div style={{ textAlign: "center", marginTop: 96 }}>Перевіряємо доступ…</div>
+  }
+
+  if (role === "none") {
     return (
       <div style={{ textAlign: "center", marginTop: 96 }}>
         <h2>Потрібний NFT не знайдено</h2>
@@ -81,10 +53,19 @@ if (!isConnected) {
     )
   }
 
-  // Є NFT – відкриваємо дошку
-    return (
+  // Є доступ
+  const readOnly = role === "reader"
+
+  return (
     <div style={{ height: "100vh", width: "100vw" }}>
+      {/* якщо у твоїй версії є проп readOnly/canEdit — використовуємо */}
+      {/* <Tldraw readOnly={readOnly} />  або <Tldraw canEdit={!readOnly} /> */}
       <Tldraw persistenceKey="gated-room" />
+      {readOnly && (
+        <div style={{position:"fixed", top:12, right:12, padding:"6px 10px", background:"#ffeded", border:"1px solid #f66", borderRadius:6, fontWeight:600}}>
+          Reader mode: редагування вимкнено
+        </div>
+      )}
     </div>
   )
 }

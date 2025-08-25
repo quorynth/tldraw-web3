@@ -2,80 +2,75 @@ import { NextResponse } from "next/server"
 import { createPublicClient, http } from "viem"
 import { mainnet, polygon } from "viem/chains"
 import erc721 from "@/lib/abi/erc721.json"
-import erc1155 from "@/lib/abi/erc1155.json"
 
 function pickChain() {
   const id = Number(process.env.NEXT_PUBLIC_CHAIN_ID)
   if (id === 137) return polygon
   if (id === 1) return mainnet
-  // дефолт: polygon, щоб відповідало твоєму сетапу
   return polygon
 }
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-
-  const nft = searchParams.get("nft") as `0x${string}` | null
-  const user = searchParams.get("user") as `0x${string}` | null
-
-  // тип + tokenId беремо з query або з ENV
-  const type =
-    (searchParams.get("type") ||
-      process.env.NEXT_PUBLIC_NFT_TYPE ||
-      "erc721").toLowerCase()
-
-  const tokenIdStr =
-    searchParams.get("tokenId") ||
-    process.env.NEXT_PUBLIC_NFT_TOKEN_ID ||
-    "0"
-  let tokenId: bigint
+function parseIds(name: "WRITER_TOKEN_IDS" | "READER_TOKEN_IDS"): bigint[] {
+  const raw = process.env[name]
+  if (!raw) return []
   try {
-    tokenId = BigInt(tokenIdStr)
+    const arr = JSON.parse(raw) as (number | string)[]
+    return arr.map(v => BigInt(v as any))
   } catch {
-    return NextResponse.json({ error: "Bad tokenId" }, { status: 400 })
+    // дозволимо простий формат типу "1,2,3"
+    return raw.split(",").map(s => BigInt(s.trim()))
   }
+}
 
-  if (!nft || !user) {
-    return NextResponse.json({ error: "Missing nft or user" }, { status: 400 })
-  }
-
-  const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL
-  if (!rpcUrl) {
-    return NextResponse.json(
-      { error: "Missing NEXT_PUBLIC_RPC_URL" },
-      { status: 500 }
-    )
-  }
-
-  const client = createPublicClient({
-    chain: pickChain(),
-    transport: http(rpcUrl),
-  })
-
+export async function GET(req: Request) {
   try {
-    let held = false
-
-    if (type === "erc1155") {
-      const balance = (await client.readContract({
-        address: nft,
-        abi: erc1155,
-        functionName: "balanceOf",
-        args: [user, tokenId],
-      })) as unknown as bigint
-      held = balance > 0n
-    } else {
-      const balance = (await client.readContract({
-        address: nft,
-        abi: erc721,
-        functionName: "balanceOf",
-        args: [user],
-      })) as unknown as bigint
-      held = balance > 0n
+    const { searchParams } = new URL(req.url)
+    const user = searchParams.get("user")?.toLowerCase()
+    const nft = (process.env.NEXT_PUBLIC_NFT_CONTRACT || "").toLowerCase()
+    if (!user || !nft) {
+      return NextResponse.json({ error: "user or contract missing" }, { status: 400 })
     }
 
-    return NextResponse.json({ held })
+    const chain = pickChain()
+    const rpc = process.env.NEXT_PUBLIC_RPC_URL
+    const client = createPublicClient({ chain, transport: http(rpc) })
+
+    const writerIds = parseIds("WRITER_TOKEN_IDS")
+    const readerIds = parseIds("READER_TOKEN_IDS")
+
+    // допоміжна: перевірити власника конкретного tokenId
+    async function isOwnerOf(tokenId: bigint): Promise<boolean> {
+      try {
+        const owner = await client.readContract({
+          address: nft as `0x${string}`,
+          abi: erc721,
+          functionName: "ownerOf",
+          args: [tokenId],
+        }) as string
+        return owner.toLowerCase() === user
+      } catch {
+        return false
+      }
+    }
+
+    // 1) пріоритет — writer
+    for (const id of writerIds) {
+      if (await isOwnerOf(id)) {
+        return NextResponse.json({ role: "writer" })
+      }
+    }
+
+    // 2) потім — reader
+    for (const id of readerIds) {
+      if (await isOwnerOf(id)) {
+        return NextResponse.json({ role: "reader" })
+      }
+    }
+
+    // 3) інакше — none
+    return NextResponse.json({ role: "none" })
   } catch (err: any) {
-    const msg = err?.shortMessage || err?.message || "Contract read failed"
+    const msg = err?.shortMessage || err?.message || "role check failed"
     return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
