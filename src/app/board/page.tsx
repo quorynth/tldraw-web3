@@ -47,14 +47,14 @@ if (!isConnected) {
 }
 
   if (loading || role === "idle") {
-    return <div style={{ textAlign: "center", marginTop: 96 }}>Перевіряємо доступ…</div>
+    return <div style={{ textAlign: "center", marginTop: 96 }}>Verifying access…</div>
   }
 
   if (role === "none") {
     return (
       <div style={{ textAlign: "center", marginTop: 96 }}>
         <h2>Required NFT not found</h2>
-        <p>Access to this section is restricted to owners of special NFTs</p>
+        <p>Access to this section is restricted to owners of the special NFTs</p>
       </div>
     )
   }
