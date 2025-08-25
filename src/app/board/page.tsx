@@ -34,15 +34,15 @@ export default function BoardPage() {
     return () => { cancelled = true }
   }, [isConnected, address])
 
-  if (!isConnected) {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-screen text-center">
-          <h1 className="text-2xl font-bold mb-4">TLDraw NFT Gate</h1>
-          <p className="mb-6">Під’єднай гаманець, щоб увійти</p>
-          <ConnectButton />
-        </div>
-    )
-  }
+if (!isConnected) {
+  return (
+    <div className="w-full min-h-screen flex flex-col items-center justify-center text-center">
+      <h1 className="text-3xl font-bold mb-4">TLDraw - SHADOW NFT Gate</h1>
+      <p className="mb-6">Під’єднай гаманець, щоб увійти</p>
+      <ConnectButton />
+    </div>
+  )
+}
 
   if (loading || role === "idle") {
     return <div style={{ textAlign: "center", marginTop: 96 }}>Перевіряємо доступ…</div>
