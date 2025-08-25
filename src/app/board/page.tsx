@@ -36,11 +36,11 @@ export default function BoardPage() {
 
 if (!isConnected) {
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center text-center">
-      <h1 className="text-3xl font-bold mb-4">TLDraw - SHADOW NFT Gate</h1>
-      <p className="mb-6">Під’єднай гаманець, щоб увійти</p>
-      <ConnectButton />
-    </div>
+      <div style={{ textAlign: "center", marginTop: 96 }}>
+        <h1>TLDraw NFT Gate</h1>
+        <p>Під’єднай гаманець, щоб увійти</p>        
+        <ConnectButton />
+      </div>
   )
 }
 

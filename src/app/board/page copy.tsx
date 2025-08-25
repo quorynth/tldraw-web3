@@ -38,10 +38,8 @@ export default function BoardPage() {
     return (
       <div style={{ textAlign: "center", marginTop: 96 }}>
         <h1>TLDraw NFT Gate</h1>
-        <p>Під’єднай гаманець, щоб увійти</p>
-        <div className="flex min-h-screen items-center justify-center">
-          <ConnectButton />
-        </div>
+        <p>Під’єднай гаманець, щоб увійти</p>        
+        <ConnectButton />
       </div>
     )
   }
