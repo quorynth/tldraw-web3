@@ -86,7 +86,7 @@ if (!isConnected) {
             zIndex: 10,
           }}
         >
-          Reader mode: редагування вимкнено
+          READER MODE
         </div>
       )}
     </div>

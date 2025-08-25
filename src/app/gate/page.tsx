@@ -18,7 +18,7 @@ export default function GatePage() {
 
   return (
     <div style={{ textAlign: "center", marginTop: 96 }}>
-      <h1>Увійти</h1>
+      <h1>Portal entry.... </h1>
       <p>Connect your wallet to check NFT.</p>
       <div className="flex min-h-screen items-center justify-center">
         <ConnectButton />
