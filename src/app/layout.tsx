@@ -7,7 +7,7 @@ import '@tldraw/tldraw/tldraw.css'   // або 'tldraw/tldraw.css' — зале�
 import './globals.css'
 
 export const metadata = {
-  title: "TLDraw NFT Gate",
+  title: "TLDraw - SHADOW NFT Gate",
   description: "Protected TLDraw",
 }
 

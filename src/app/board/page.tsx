@@ -38,7 +38,7 @@ if (!isConnected) {
   return (
       <div style={{ textAlign: "center", marginTop: 96 }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 100 }}>
-          <h1>TLDraw NFT Gate</h1>
+          <h1>TLDraw - SHADOW NFT Gate</h1>
           <p>Connect your wallet to check NFT</p>        
           <ConnectButton />
         </div>
