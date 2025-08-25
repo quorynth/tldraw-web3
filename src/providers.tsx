@@ -9,7 +9,7 @@ import { polygon } from 'wagmi/chains'
 const queryClient = new QueryClient()
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!
-const rpcUrl    = process.env.NEXT_PUBLIC_RPC_URL || 'https://polygon-rpc.com'
+const rpcUrl    = process.env.ALCHEMY_HTTP_URL || 'https://polygon-rpc.com'
 
 const config = getDefaultConfig({
   appName: 'TLDraw NFT Gate',

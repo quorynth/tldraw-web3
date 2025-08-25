@@ -59,7 +59,7 @@ export async function GET(req: Request) {
     // ВАЖЛИВО: на сервері краще юзати приватний RPC
     const rpc =
       process.env.ALCHEMY_HTTP_URL ||
-      process.env.NEXT_PUBLIC_RPC_URL // запасний варіант
+      process.env.ALCHEMY_HTTP_URL // запасний варіант
     if (!rpc) {
       return NextResponse.json({ error: "rpc missing" }, { status: 500 })
     }
