@@ -22,8 +22,8 @@ export default function BoardPage() {
       try {
         setLoading(true)
         const res = await fetch(`/api/check-holder?user=${address}`, { cache: "no-store" })
-        const { role } = await res.json()
-        if (!cancelled) setRole(role as Role ?? "none")
+        const json = await res.json()
+        if (!cancelled) setRole((json.role as Role) ?? "none")
       } catch {
         if (!cancelled) setRole("none")
       } finally {
@@ -63,31 +63,38 @@ export default function BoardPage() {
 
   return (
     <div style={{ height: "100vh", width: "100vw", position: "relative" }}>
-      <Tldraw
-        persistenceKey="gated-room"
-        onMount={(editor) => {
-          if (readOnly) {
-            editor.updateInstanceState({ isReadonly: true })
-          }
-        }}
-      />
+      {/* Якщо твоя версія @tldraw/tldraw має проп readOnly або canEdit — розкоментуй один із них */}
+      {/* <Tldraw readOnly={readOnly} persistenceKey="gated-room" /> */}
+      {/* <Tldraw canEdit={!readOnly} persistenceKey="gated-room" /> */}
+      <Tldraw persistenceKey="gated-room" />
 
       {readOnly && (
-        <div
-          style={{
-            position: "fixed",
-            top: 12,
-            right: 12,
-            padding: "6px 10px",
-            background: "#ffeded",
-            border: "1px solid #f66",
-            borderRadius: 6,
-            fontWeight: 600,
-            zIndex: 10,
-          }}
-        >
-          Reader mode: редагування вимкнено
-        </div>
+        <>
+          {/* Банер про режим читача */}
+          <div
+            style={{
+              position: "fixed",
+              top: 12,
+              right: 12,
+              padding: "6px 10px",
+              background: "#ffeded",
+              border: "1px solid #f66",
+              borderRadius: 6,
+              fontWeight: 600,
+              zIndex: 10,
+            }}
+          >
+            Reader mode: редагування вимкнено
+          </div>
+          {/* Простий UX-лок: блокуємо кліки по полотну (до підключення Liveblocks) */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              pointerEvents: "none", // підстрахує від випадкових кліків
+            }}
+          />
+        </>
       )}
     </div>
   )

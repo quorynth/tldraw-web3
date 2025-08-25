@@ -1,44 +1,74 @@
 // src/middleware.ts
-import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
-// Edge-safe nonce
-function makeNonce() {
+// Edge Runtime: використовуємо Web Crypto, без 'node:crypto'
+function makeNonce(): string {
   const arr = new Uint8Array(16)
   crypto.getRandomValues(arr)
-  // @ts-ignore
+  // base64 (досить для CSP nonce)
+  // @ts-ignore btoa доступний у Edge runtime
   return btoa(String.fromCharCode(...arr))
 }
 
 export function middleware(req: NextRequest) {
-  // Дозволяємо API без CSP, щоб легко дебажити
-  if (req.nextUrl.pathname.startsWith("/api")) return NextResponse.next()
-
-  const res = NextResponse.next()
   const nonce = makeNonce()
-  const rpc = (process.env.NEXT_PUBLIC_RPC_URL ?? "").trim()
 
-  const directives = [
-    `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}'`,
-    `style-src 'self' 'unsafe-inline'`,
-    `img-src 'self' data: blob: https://cdn.tldraw.com`,
-    `font-src 'self' data: https://cdn.tldraw.com`,
-    `connect-src 'self' ${rpc} https://*.alchemy.com https://cdn.tldraw.com https://tldraw-web3.vercel.app https://*.walletconnect.com https://*.reown.com`,
-    // якщо додаси Liveblocks: `wss://*.liveblocks.io`
-    `worker-src 'self' blob:`,
-    `frame-src 'self' https://verify.walletconnect.com https://*.walletconnect.com`,
-    `frame-ancestors 'self'`,
-    `object-src 'none'`,
-    `base-uri 'self'`,
-  ].filter(Boolean)
+  // Прокидуємо nonce у заголовки запиту, щоб зчитати його в layout.tsx через next/headers
+  const requestHeaders = new Headers(req.headers)
+  requestHeaders.set("x-nonce", nonce)
 
-  let csp = directives.join("; ")
-  csp = csp.replace(/[^\x20-\x7E]/g, "") // прибираємо не-ASCII на всяк випадок
+  const res = NextResponse.next({ request: { headers: requestHeaders } })
+
+  // CSP (мінімально потрібне для TLDraw + твій стек)
+const csp = `
+  default-src 'self';
+  base-uri 'self';
+  frame-ancestors 'self';
+  object-src 'none';
+
+  script-src 'self' 'nonce-${nonce}';
+  script-src-elem 'self' 'nonce-${nonce}';
+  script-src-attr 'self' 'nonce-${nonce}';
+
+  /* RainbowKit/Web3Modal інжектять інлайн-стилі */
+  style-src 'self' 'nonce-${nonce}' 'unsafe-inline' 'unsafe-hashes';
+  style-src-elem 'self' 'nonce-${nonce}' 'unsafe-inline';
+  style-src-attr 'self' 'nonce-${nonce}' 'unsafe-inline';
+
+  img-src 'self' data: blob: https://cdn.tldraw.com https://*.tldraw.com;
+  font-src 'self' https://cdn.tldraw.com data:;
+
+  /* ГОЛОВНЕ: дозволяємо WS + API для WalletConnect/Reown + RPC */
+  connect-src
+    'self'
+    blob:
+    https://cdn.tldraw.com
+    https://polygon-mainnet.g.alchemy.com
+    https://*.walletconnect.com
+    https://*.walletconnect.org
+    https://api.web3modal.org
+    https://pulse.walletconnect.org
+    https://*.reown.com
+    https://polygon-rpc.com
+    https://rpc.ankr.com
+    wss://*.walletconnect.com
+    wss://*.walletconnect.org
+    wss://*;
+
+  worker-src 'self' blob:;
+  frame-src 'self' https://*.walletconnect.com https://cdn.tldraw.com;
+  child-src 'self' https://*.walletconnect.com https://cdn.tldraw.com;
+  manifest-src 'self' https://cdn.tldraw.com;
+`.replace(/\s{2,}/g, ' ').trim()
+
 
   res.headers.set("Content-Security-Policy", csp)
-  res.headers.set("x-nonce", nonce) // лише для дебагу
+  // дублюємо nonce у відповідь (не обов'язково, але зручно дебажити)
+  res.headers.set("x-nonce", nonce)
+
   return res
 }
 
-export const config = { matcher: ["/((?!_next|api|favicon.ico).*)"] }
+// за замовчуванням на всі шляхи
+export const config = { matcher: "/:path*" }
